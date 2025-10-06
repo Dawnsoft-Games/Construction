@@ -14,9 +14,9 @@ public class MaterialPanel : Sandbox.UI.Panel
 	public Color Tint { get; set; } = Color.White;
 	
 	/// <summary>
-	/// Offset of the material in pixels (X, Y)
+	/// Offset of the material in pixels (X, Y, Z)
 	/// </summary>
-	public Vector2 Offset { get; set; } = Vector2.Zero;
+	public Vector3 Offset { get; set; } = Vector3.Zero;
 	
 	/// <summary>
 	/// Scale of the material (1.0 = normal size, 2.0 = double size, 0.5 = half size)
@@ -126,10 +126,10 @@ public class MaterialPanel : Sandbox.UI.Panel
 				rect = new Rect( 0, 0, Screen.Width, Screen.Height );
 			}
 			
-			// Apply offset by moving the rect
-			if ( Offset != Vector2.Zero )
+			// Apply offset by moving the rect (X and Y)
+			if ( Offset.x != 0 || Offset.y != 0 )
 			{
-				rect.Position += Offset;
+				rect.Position += new Vector2( Offset.x, Offset.y );
 			}
 			
 			// Apply scale by changing the size from center
@@ -142,18 +142,55 @@ public class MaterialPanel : Sandbox.UI.Panel
 			
 			if ( _useDirectMaterial )
 			{
-				// Shader materials - try to render in UI screen space
-				// Using Graphics.Attributes to set up 2D orthographic rendering
+				// Shader materials - render with manual vertex transformation
 				try
 				{
-					// Set up orthographic projection for 2D UI rendering
-					var screenRect = new Rect( 0, 0, Screen.Width, Screen.Height );
+					// Calculate center point for rotation (with Z offset applied)
+					var center = new Vector3( rect.Center.x, rect.Center.y, Offset.z );
 					
-					// Create vertices for a 2D quad in screen space
-					var v0 = new Vertex( new Vector3( rect.Left, rect.Top, 0 ), Vector3.Forward, Vector3.Right, new Vector2( 0, 0 ) );
-					var v1 = new Vertex( new Vector3( rect.Right, rect.Top, 0 ), Vector3.Forward, Vector3.Right, new Vector2( 1, 0 ) );
-					var v2 = new Vertex( new Vector3( rect.Right, rect.Bottom, 0 ), Vector3.Forward, Vector3.Right, new Vector2( 1, 1 ) );
-					var v3 = new Vertex( new Vector3( rect.Left, rect.Bottom, 0 ), Vector3.Forward, Vector3.Right, new Vector2( 0, 1 ) );
+					// Create rotation matrix from Euler angles
+					var hasRotation = RotationX != 0 || RotationY != 0 || RotationZ != 0;
+					Rotation rotation = Rotation.Identity;
+					
+					if ( hasRotation )
+					{
+						// Convert degrees to rotation (pitch, yaw, roll)
+						rotation = Rotation.From( RotationX, RotationY, RotationZ );
+					}
+					
+					// Define quad corners relative to center
+					var halfWidth = rect.Width * 0.5f;
+					var halfHeight = rect.Height * 0.5f;
+					
+					Vector3[] corners = new Vector3[]
+					{
+						new Vector3( -halfWidth, -halfHeight, 0 ), // Top-left
+						new Vector3( halfWidth, -halfHeight, 0 ),  // Top-right
+						new Vector3( halfWidth, halfHeight, 0 ),   // Bottom-right
+						new Vector3( -halfWidth, halfHeight, 0 )   // Bottom-left
+					};
+					
+					// Apply rotation to each corner, then translate to center (with Z offset)
+					for ( int i = 0; i < 4; i++ )
+					{
+						if ( hasRotation )
+						{
+							corners[i] = rotation * corners[i];
+						}
+						corners[i] += center; // This now includes Offset.z
+					}
+					
+					// Create vertices with proper UV coordinates
+					var v0 = new Vertex( corners[0], Vector3.Forward, Vector3.Right, new Vector2( 0, 0 ) );
+					var v1 = new Vertex( corners[1], Vector3.Forward, Vector3.Right, new Vector2( 1, 0 ) );
+					var v2 = new Vertex( corners[2], Vector3.Forward, Vector3.Right, new Vector2( 1, 1 ) );
+					var v3 = new Vertex( corners[3], Vector3.Forward, Vector3.Right, new Vector2( 0, 1 ) );
+					
+					// Apply tint to vertices
+					v0.Color = Tint;
+					v1.Color = Tint;
+					v2.Color = Tint;
+					v3.Color = Tint;
 					
 					// Draw two triangles to form a quad
 					Span<Vertex> vertices = stackalloc Vertex[6]
@@ -166,8 +203,7 @@ public class MaterialPanel : Sandbox.UI.Panel
 				}
 				catch ( Exception ex )
 				{
-					Log.Warning( $"MaterialPanel: Failed to render shader material in UI space: {ex.Message}" );
-					// Fallback to colored rect
+					Log.Warning( $"MaterialPanel: Failed to render shader material: {ex.Message}" );
 					Style.BackgroundColor = Tint;
 				}
 			}
