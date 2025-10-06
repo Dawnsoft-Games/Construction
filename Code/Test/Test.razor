@@ -1,0 +1,165 @@
+@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@using Construction.UI;
+@inherits PanelComponent
+@namespace Sandbox
+
+<root class="test-root">
+	<MaterialPanel class="material-background" @ref="backgroundPanel" />
+
+	<div class="content">
+		<div class="title">@MyStringValue</div>
+
+
+
+		<div class="field">
+			<button @onclick="CreateEntityWithComponent">Create Entity with Component</button>
+		</div>
+	</div>
+</root>
+
+@code
+{
+	[Property, TextArea] public string MyStringValue { get; set; } = "Hello World!";
+
+	[System.Text.Json.Serialization.JsonIgnore]
+	private Panel cachedRootPanel;
+
+	[System.Text.Json.Serialization.JsonIgnore]
+	private MaterialPanel backgroundPanel;
+
+	// Direct Material property with asset picker
+	[Property]
+	public Material Material
+	{
+		get => _material;
+		set
+		{
+			if ( _material != value )
+			{
+				_material = value;
+				hasAppliedInitialBackground = false;
+				TryApplyMaterialBackground();
+			}
+		}
+	}
+
+	[Property]
+	public Color BackgroundTint
+	{
+		get => _backgroundTint;
+		set
+		{
+			if ( _backgroundTint != value )
+			{
+				_backgroundTint = value;
+				hasAppliedInitialBackground = false;
+				TryApplyMaterialBackground();
+			}
+		}
+	}
+
+	[Property] private Material _material;
+	[Property] private Color _backgroundTint = Color.White;
+	[Property] bool hasAppliedInitialBackground;
+
+	protected override int BuildHash()
+	{
+		unchecked
+		{
+			int hash = 17;
+			hash = hash * 23 + (MyStringValue?.GetHashCode() ?? 0);
+			hash = hash * 23 + (Material?.GetHashCode() ?? 0);
+			hash = hash * 23 + BackgroundTint.GetHashCode();
+			return hash;
+		}
+	}
+
+	void CreateEntityWithComponent()
+	{
+		// Create a simple GameObject and attach the component so it runs in-game.
+		var go = new GameObject();
+		var comp = go.Components.GetOrCreate<MaterialControlComponent>();
+
+		// Use the selected material
+		if ( Material != null )
+		{
+			comp.Material = Material;
+
+			// Also create a UI MaterialPanel under the root and apply the material there
+			try
+			{
+				var root = ResolveRootPanel();
+				if ( root != null )
+				{
+					var uiPanel = root.AddChild<MaterialPanel>();
+					uiPanel.Material = Material;
+				}
+			}
+			catch { }
+		}
+
+		comp.BackgroundColor = BackgroundTint;
+
+		TryApplyMaterialBackground();
+	}
+
+	protected override void OnUpdate()
+	{
+		if ( hasAppliedInitialBackground )
+		{
+			return;
+		}
+
+		hasAppliedInitialBackground = TryApplyMaterialBackground();
+	}
+
+	bool TryApplyMaterialBackground()
+	{
+		if ( backgroundPanel == null || !backgroundPanel.IsValid() )
+		{
+			// Panel not yet constructed; try again later
+			return false;
+		}
+
+		if ( Material == null )
+		{
+			backgroundPanel.Material = null;
+			return false;
+		}
+
+		backgroundPanel.Material = Material;
+		backgroundPanel.Tint = BackgroundTint;
+		backgroundPanel.Style.BackgroundColor = BackgroundTint;
+		return true;
+	}
+
+	Panel ResolveRootPanel()
+	{
+		if ( cachedRootPanel != null && cachedRootPanel.IsValid() )
+		{
+			return cachedRootPanel;
+		}
+
+		var panel = Panel;
+		if ( panel is null )
+		{
+			return null;
+		}
+
+		cachedRootPanel = FindRootPanel( panel );
+		return cachedRootPanel;
+	}
+
+	Panel FindRootPanel( Panel start )
+	{
+		var current = start;
+		while ( current?.Parent is Panel parent )
+		{
+			current = parent;
+		}
+
+		return current ?? start;
+	}
+}

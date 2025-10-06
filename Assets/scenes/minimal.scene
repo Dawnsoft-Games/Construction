@@ -611,6 +611,23 @@
           "ScaleStrategy": "ConsistentHeight",
           "TargetCamera": null,
           "ZIndex": 100
+        },
+        {
+          "__type": "Sandbox.Test",
+          "__guid": "3e75ad70-be1a-4264-a0cc-b015032f9506",
+          "__enabled": true,
+          "_backgroundTint": "1,1,1,1",
+          "_material": null,
+          "BackgroundTint": "1,1,1,1",
+          "hasAppliedInitialBackground": false,
+          "Material": null,
+          "MyStringValue": "Hello World!",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
         }
       ],
       "Children": []
