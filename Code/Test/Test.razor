@@ -62,8 +62,128 @@
 		}
 	}
 
+	[Property, Range( -1000f, 1000f )]
+	public float MaterialOffsetX
+	{
+		get => _materialOffsetX;
+		set
+		{
+			if ( _materialOffsetX != value )
+			{
+				_materialOffsetX = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property, Range( -1000f, 1000f )]
+	public float MaterialOffsetY
+	{
+		get => _materialOffsetY;
+		set
+		{
+			if ( _materialOffsetY != value )
+			{
+				_materialOffsetY = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property, Range( 0.1f, 10f )]
+	public float MaterialScale
+	{
+		get => _materialScale;
+		set
+		{
+			if ( _materialScale != value )
+			{
+				_materialScale = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property, Range( 0f, 360f )]
+	public float MaterialRotation
+	{
+		get => _materialRotation;
+		set
+		{
+			if ( _materialRotation != value )
+			{
+				_materialRotation = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property, Range( 0f, 360f ), Title( "Rotation X (Pitch)" )]
+	public float MaterialRotationX
+	{
+		get => _materialRotationX;
+		set
+		{
+			if ( _materialRotationX != value )
+			{
+				_materialRotationX = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property, Range( 0f, 360f ), Title( "Rotation Y (Yaw)" )]
+	public float MaterialRotationY
+	{
+		get => _materialRotationY;
+		set
+		{
+			if ( _materialRotationY != value )
+			{
+				_materialRotationY = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property, Range( 0f, 360f ), Title( "Rotation Z (Roll)" )]
+	public float MaterialRotationZ
+	{
+		get => _materialRotationZ;
+		set
+		{
+			if ( _materialRotationZ != value )
+			{
+				_materialRotationZ = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
+	[Property]
+	public bool ParallelToScreen
+	{
+		get => _parallelToScreen;
+		set
+		{
+			if ( _parallelToScreen != value )
+			{
+				_parallelToScreen = value;
+				hasAppliedInitialBackground = false;
+			}
+		}
+	}
+
 	[Property] private Material _material;
 	[Property] private Color _backgroundTint = Color.White;
+	[Property] private float _materialOffsetX = 0f;
+	[Property] private float _materialOffsetY = 0f;
+	[Property] private float _materialScale = 1f;
+	[Property] private float _materialRotation = 0f;
+	[Property] private float _materialRotationX = 0f;
+	[Property] private float _materialRotationY = 0f;
+	[Property] private float _materialRotationZ = 0f;
+	[Property] private bool _parallelToScreen = false;
 	[Property] bool hasAppliedInitialBackground;
 
 	protected override int BuildHash()
@@ -132,9 +252,15 @@
 			return false;
 		}
 
-		Log.Info( $"Test.razor: Applying material {Material} with tint {BackgroundTint}" );
+		Log.Info( $"Test.razor: Applying material {Material} with tint {BackgroundTint}, offset ({MaterialOffsetX}, {MaterialOffsetY}), scale {MaterialScale}, rotation (X:{MaterialRotationX}, Y:{MaterialRotationY}, Z:{MaterialRotationZ}), parallelToScreen {ParallelToScreen}" );
 		backgroundPanel.Material = Material;
 		backgroundPanel.Tint = BackgroundTint;
+		backgroundPanel.Offset = new Vector2( MaterialOffsetX, MaterialOffsetY );
+		backgroundPanel.Scale = MaterialScale;
+		backgroundPanel.RotationX = MaterialRotationX;
+		backgroundPanel.RotationY = MaterialRotationY;
+		backgroundPanel.RotationZ = MaterialRotationZ;
+		backgroundPanel.ParallelToScreen = ParallelToScreen;
 		backgroundPanel.Style.BackgroundColor = BackgroundTint;
 		Log.Info( $"Test.razor: Successfully applied! backgroundPanel.Material is now {backgroundPanel.Material}" );
 		return true;

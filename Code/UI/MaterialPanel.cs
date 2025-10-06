@@ -24,9 +24,24 @@ public class MaterialPanel : Sandbox.UI.Panel
 	public float Scale { get; set; } = 1.0f;
 	
 	/// <summary>
-	/// Rotation of the material in degrees
+	/// Rotation around Z-axis (Roll) in degrees - 2D rotation
 	/// </summary>
-	public float Rotation { get; set; } = 0.0f;
+	public float RotationZ { get; set; } = 0.0f;
+	
+	/// <summary>
+	/// Rotation around X-axis (Pitch) in degrees - tilt up/down
+	/// </summary>
+	public float RotationX { get; set; } = 0.0f;
+	
+	/// <summary>
+	/// Rotation around Y-axis (Yaw) in degrees - tilt left/right
+	/// </summary>
+	public float RotationY { get; set; } = 0.0f;
+	
+	/// <summary>
+	/// If true, the material position is fixed relative to the screen (doesn't scroll with content)
+	/// </summary>
+	public bool ParallelToScreen { get; set; } = false;
 
 	protected override void OnAfterTreeRender( bool firstTime )
 	{
@@ -44,10 +59,7 @@ public class MaterialPanel : Sandbox.UI.Panel
 	{
 		base.Tick();
 		// Log every second to confirm Tick is called
-		if ( Time.Now % 1.0f < 0.016f )
-		{
-			Log.Info( $"MaterialPanel.Tick - Material: {(Material != null ? Material.Name : "NULL")}, Box: {Box.Rect}" );
-		}
+		
 	}
 
 	// Use DrawBackground instead of DrawContent - this is called even for empty panels!
@@ -55,31 +67,58 @@ public class MaterialPanel : Sandbox.UI.Panel
 	{
 		base.DrawBackground( ref state );
 
-		Log.Info( $"MaterialPanel.DrawBackground called - Material: {(Material != null ? Material.Name : "NULL")}, Box.Rect: {Box.Rect}, Tint: {Tint}" );
-
 		if ( Material == null )
 		{
-			Log.Warning( "MaterialPanel: Material is null in DrawBackground" );
 			return;
 		}
 
 		try
 		{
-			Log.Info( $"MaterialPanel: About to DrawQuad with rect {Box.Rect}" );
-			Graphics.DrawQuad( Box.Rect, Material, Tint );
-			Log.Info( $"MaterialPanel: DrawQuad succeeded!" );
+			var rect = Box.Rect;
+			
+			// If ParallelToScreen is enabled, use screen-space coordinates
+			if ( ParallelToScreen )
+			{
+				// Get the screen-space position
+				rect = new Rect( 0, 0, Screen.Width, Screen.Height );
+			}
+			
+			// Apply offset by moving the rect
+			if ( Offset != Vector2.Zero )
+			{
+				rect.Position += Offset;
+			}
+			
+			// Apply scale by changing the size from center
+			if ( Scale != 1.0f )
+			{
+				var center = rect.Center;
+				var newSize = rect.Size * Scale;
+				rect = new Rect( center.x - newSize.x * 0.5f, center.y - newSize.y * 0.5f, newSize.x, newSize.y );
+			}
+			
+			// Try to get the base texture from the material
+			Texture texture = Material.GetTexture( "Color" ) ?? Material.GetTexture( "Albedo" ) ?? Material.GetTexture( "g_tColor" );
+			
+			if ( texture != null )
+			{
+				// Use the texture as background via Style
+				Style.BackgroundImage = texture;
+				Style.BackgroundTint = Tint;
+				Style.BackgroundSizeX = Length.Pixels( rect.Width );
+				Style.BackgroundSizeY = Length.Pixels( rect.Height );
+				Style.BackgroundPositionX = Length.Pixels( Offset.x );
+				Style.BackgroundPositionY = Length.Pixels( Offset.y );
+			}
+			else
+			{
+				// Fallback: Just use the tint color
+				Style.BackgroundColor = Tint;
+			}
 		}
 		catch ( Exception ex )
 		{
-			Log.Warning( $"MaterialPanel: DrawQuad failed: {ex.Message}. Using fallback." );
-			try
-			{
-				Graphics.DrawQuad( Box.Rect, Material.UI.Basic, Tint );
-			}
-			catch
-			{
-				Style.BackgroundColor = Tint;
-			}
+			Log.Warning( $"MaterialPanel: Draw failed: {ex.Message}" );
 		}
 	}
 }
