@@ -39,8 +39,10 @@
 			if ( _material != value )
 			{
 				_material = value;
+				Log.Info( $"Test.razor: Material changed to {(_material != null ? _material.ToString() : "null")}" );
 				hasAppliedInitialBackground = false;
-				TryApplyMaterialBackground();
+				// Don't call TryApplyMaterialBackground here - let OnUpdate handle it
+				// because backgroundPanel might not be ready yet
 			}
 		}
 	}
@@ -55,7 +57,7 @@
 			{
 				_backgroundTint = value;
 				hasAppliedInitialBackground = false;
-				TryApplyMaterialBackground();
+				// Don't call TryApplyMaterialBackground here - let OnUpdate handle it
 			}
 		}
 	}
@@ -119,19 +121,22 @@
 	{
 		if ( backgroundPanel == null || !backgroundPanel.IsValid() )
 		{
-			// Panel not yet constructed; try again later
+			Log.Warning( "Test.razor: backgroundPanel is null or invalid" );
 			return false;
 		}
 
 		if ( Material == null )
 		{
+			Log.Warning( "Test.razor: Material is null, clearing background" );
 			backgroundPanel.Material = null;
 			return false;
 		}
 
+		Log.Info( $"Test.razor: Applying material {Material} with tint {BackgroundTint}" );
 		backgroundPanel.Material = Material;
 		backgroundPanel.Tint = BackgroundTint;
 		backgroundPanel.Style.BackgroundColor = BackgroundTint;
+		Log.Info( $"Test.razor: Successfully applied! backgroundPanel.Material is now {backgroundPanel.Material}" );
 		return true;
 	}
 

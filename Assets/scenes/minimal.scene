@@ -614,13 +614,13 @@
         },
         {
           "__type": "Sandbox.Test",
-          "__guid": "3e75ad70-be1a-4264-a0cc-b015032f9506",
+          "__guid": "b0452a87-5b72-47aa-9223-8094c177fbea",
           "__enabled": true,
-          "_backgroundTint": "1,1,1,1",
-          "_material": null,
-          "BackgroundTint": "1,1,1,1",
+          "_backgroundTint": "0,0,0,1",
+          "_material": "materials/hotspots/metal_painted_blue_a_hs.vmat",
+          "BackgroundTint": "0,0,0,1",
           "hasAppliedInitialBackground": false,
-          "Material": null,
+          "Material": "materials/hotspots/metal_painted_blue_a_hs.vmat",
           "MyStringValue": "Hello World!",
           "OnComponentDestroy": null,
           "OnComponentDisabled": null,
@@ -656,6 +656,8 @@
   "ResourceVersion": 3,
   "Title": "minimal",
   "Description": null,
-  "__references": [],
+  "__references": [
+    "facepunch.metal_painted_blue_a_hs#29191"
+  ],
   "__version": 3
 }
