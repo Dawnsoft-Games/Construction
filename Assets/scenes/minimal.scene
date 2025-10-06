@@ -617,17 +617,24 @@
           "__guid": "b0452a87-5b72-47aa-9223-8094c177fbea",
           "__enabled": true,
           "_backgroundTint": "0,0,0,1",
-          "_material": "materials/hotspots/metal_painted_blue_a_hs.vmat",
+          "_material": "materials/liquid/retro_lava_01.vmat",
           "_materialOffsetX": 0,
           "_materialOffsetY": 0,
           "_materialRotation": 0,
+          "_materialRotationX": 0,
+          "_materialRotationY": 0,
+          "_materialRotationZ": 0,
           "_materialScale": 1,
+          "_parallelToScreen": false,
           "BackgroundTint": "0,0,0,1",
           "hasAppliedInitialBackground": false,
-          "Material": "materials/hotspots/metal_painted_blue_a_hs.vmat",
+          "Material": "materials/liquid/retro_lava_01.vmat",
           "MaterialOffsetX": 0,
           "MaterialOffsetY": 0,
           "MaterialRotation": 0,
+          "MaterialRotationX": 0,
+          "MaterialRotationY": 0,
+          "MaterialRotationZ": 0,
           "MaterialScale": 1,
           "MyStringValue": "Hello World!",
           "OnComponentDestroy": null,
@@ -635,7 +642,8 @@
           "OnComponentEnabled": null,
           "OnComponentFixedUpdate": null,
           "OnComponentStart": null,
-          "OnComponentUpdate": null
+          "OnComponentUpdate": null,
+          "ParallelToScreen": false
         }
       ],
       "Children": []
@@ -665,7 +673,7 @@
   "Title": "minimal",
   "Description": null,
   "__references": [
-    "facepunch.metal_painted_blue_a_hs#29191"
+    "baik.retrolava#106891"
   ],
   "__version": 3
 }

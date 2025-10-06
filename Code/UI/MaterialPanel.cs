@@ -55,11 +55,52 @@ public class MaterialPanel : Sandbox.UI.Panel
 		Log.Info( $"MaterialPanel.OnAfterTreeRender - firstTime: {firstTime}, Material: {(Material != null ? Material.Name : "NULL")}" );
 	}
 
+	private Material _lastMaterial;
+	private Texture _cachedTexture;
+	private bool _useDirectMaterial = false;
+
 	public override void Tick()
 	{
 		base.Tick();
-		// Log every second to confirm Tick is called
 		
+		// Update texture when material changes
+		if ( Material != _lastMaterial )
+		{
+			_lastMaterial = Material;
+			UpdateMaterialTexture();
+		}
+	}
+
+	private void UpdateMaterialTexture()
+	{
+		if ( Material == null )
+		{
+			_cachedTexture = null;
+			_useDirectMaterial = false;
+			Style.BackgroundImage = null;
+			return;
+		}
+
+		// Try to get the base texture from the material
+		_cachedTexture = Material.GetTexture( "Color" ) ?? 
+		                 Material.GetTexture( "Albedo" ) ?? 
+		                 Material.GetTexture( "g_tColor" ) ??
+		                 Material.GetTexture( "TextureColor" ) ??
+		                 Material.GetTexture( "tintmasktexture" );
+
+		if ( _cachedTexture == null )
+		{
+			// No texture found - this is a shader material
+			// NOTE: Shader materials will render in 3D world space, not 2D UI space
+			// This is a limitation of the s&box API
+			_useDirectMaterial = true;
+			Log.Info( $"MaterialPanel: Material {Material.Name} is a shader material (will render in 3D space)" );
+		}
+		else
+		{
+			_useDirectMaterial = false;
+			Log.Info( $"MaterialPanel: Material {Material.Name} has texture (will render in 2D UI)" );
+		}
 	}
 
 	// Use DrawBackground instead of DrawContent - this is called even for empty panels!
@@ -69,6 +110,8 @@ public class MaterialPanel : Sandbox.UI.Panel
 
 		if ( Material == null )
 		{
+			Style.BackgroundImage = null;
+			Style.BackgroundColor = Color.Transparent;
 			return;
 		}
 
@@ -97,16 +140,65 @@ public class MaterialPanel : Sandbox.UI.Panel
 				rect = new Rect( center.x - newSize.x * 0.5f, center.y - newSize.y * 0.5f, newSize.x, newSize.y );
 			}
 			
-			// Try to get the base texture from the material
-			Texture texture = Material.GetTexture( "Color" ) ?? Material.GetTexture( "Albedo" ) ?? Material.GetTexture( "g_tColor" );
-			
-			if ( texture != null )
+			if ( _useDirectMaterial )
 			{
-				// Use the texture as background via Style
-				Style.BackgroundImage = texture;
+				// Shader materials - EXPERIMENTAL: Try to force 2D rendering
+				// The problem: Graphics.Draw uses 3D world space
+				// Solution attempt: Use Graphics attributes to override projection
+				try
+				{
+					// Save current graphics state
+					var oldAttributes = Graphics.Attributes;
+					
+					// Try to set 2D orthographic attributes
+					Graphics.Attributes.Set( "UI_RENDERING", 1.0f );
+					Graphics.Attributes.Set( "SCREEN_SPACE", 1.0f );
+					
+					// Apply transforms
+					var transformedRect = rect;
+					if ( ParallelToScreen )
+					{
+						transformedRect = new Rect( Offset.x, Offset.y, Screen.Width * Scale, Screen.Height * Scale );
+					}
+					else
+					{
+						var center = rect.Center;
+						var newSize = rect.Size * Scale;
+						transformedRect = new Rect( 
+							center.x - newSize.x * 0.5f + Offset.x, 
+							center.y - newSize.y * 0.5f + Offset.y, 
+							newSize.x, 
+							newSize.y 
+						);
+					}
+					
+					// Use DrawQuad but with UI attributes
+					Graphics.DrawQuad( transformedRect, Material, Tint );
+					
+					// Restore graphics state
+					Graphics.Attributes = oldAttributes;
+				}
+				catch ( Exception ex )
+				{
+					Log.Warning( $"MaterialPanel: Failed to render shader material: {ex.Message}" );
+					Style.BackgroundColor = Tint;
+				}
+			}
+			else if ( _cachedTexture != null )
+			{
+				// Regular texture materials render in 2D UI space
+				var transformedRect = rect;
+				
+				// Apply ParallelToScreen
+				if ( ParallelToScreen )
+				{
+					transformedRect = new Rect( Offset.x, Offset.y, Screen.Width * Scale, Screen.Height * Scale );
+				}
+				
+				Style.BackgroundImage = _cachedTexture;
 				Style.BackgroundTint = Tint;
-				Style.BackgroundSizeX = Length.Pixels( rect.Width );
-				Style.BackgroundSizeY = Length.Pixels( rect.Height );
+				Style.BackgroundSizeX = Length.Percent( 100 * Scale );
+				Style.BackgroundSizeY = Length.Percent( 100 * Scale );
 				Style.BackgroundPositionX = Length.Pixels( Offset.x );
 				Style.BackgroundPositionY = Length.Pixels( Offset.y );
 			}
