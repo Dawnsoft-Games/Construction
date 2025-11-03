@@ -204,7 +204,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 10,
-      "Value": 3.438568,
+      "Value": 5,
       "Name": "noise width",
       "IsAttribute": false,
       "UI": {
@@ -298,7 +298,7 @@
     },
     {
       "_class": "Float4",
-      "Value": "0.26512,0.00442,0,1",
+      "Value": "1,0.45,0,1",
       "Name": "color1",
       "IsAttribute": false,
       "UI": {
@@ -322,7 +322,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 100,
-      "Value": 0.5,
+      "Value": 1.2,
       "Name": "edge intensity",
       "IsAttribute": false,
       "UI": {
@@ -467,7 +467,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 1,
-      "Value": 0.055535696,
+      "Value": 0.3,
       "Name": "",
       "IsAttribute": false,
       "UI": {
@@ -507,7 +507,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 100,
-      "Value": 13.571265,
+      "Value": 6,
       "Name": "",
       "IsAttribute": false,
       "UI": {
@@ -557,7 +557,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 100,
-      "Value": 1,
+      "Value": 1.8,
       "Name": "edge intensityb",
       "IsAttribute": false,
       "UI": {
@@ -585,7 +585,7 @@
     },
     {
       "_class": "Float4",
-      "Value": "0.19535,0,0,1",
+      "Value": "0.6,0.05,0,1",
       "Name": "color2",
       "IsAttribute": false,
       "UI": {
@@ -919,7 +919,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 100,
-      "Value": 47.36683,
+      "Value": 12,
       "Name": "",
       "IsAttribute": false,
       "UI": {
@@ -997,7 +997,7 @@
       "_class": "Float",
       "Min": 0,
       "Max": 1,
-      "Value": 0.7413055,
+      "Value": 1.6,
       "Name": "",
       "IsAttribute": false,
       "UI": {
@@ -1173,7 +1173,7 @@
     },
     {
       "_class": "Float4",
-      "Value": "0.13488,0.02321,0.02321,1",
+      "Value": "1,0.6,0.1,1",
       "Name": "bubblecolor",
       "IsAttribute": false,
       "UI": {

@@ -74,15 +74,15 @@ PS
 {
 	#include "common/pixel.hlsl"
 	
-	float4 g_vcolor2 < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 0.20, 0.00, 0.00, 1.00 ); >;
+	float4 g_vcolor2 < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 0.60, 0.05, 0.00, 1.00 ); >;
 	float g_fledgepositionb < UiGroup( ",0/,0/0" ); Default1( 14.828644 ); Range1( -100, 100 ); >;
 	float g_flheight < UiGroup( ",0/,0/0" ); Default1( -30.857643 ); Range1( -100, 100 ); >;
-	float g_flnoisewidth < UiGroup( ",0/,0/0" ); Default1( 3.438568 ); Range1( 0, 10 ); >;
-	float g_fledgeintensityb < UiGroup( ",0/,0/0" ); Default1( 1 ); Range1( 0, 100 ); >;
-	float4 g_vcolor1 < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 0.27, 0.00, 0.00, 1.00 ); >;
+	float g_flnoisewidth < UiGroup( ",0/,0/0" ); Default1( 5 ); Range1( 0, 10 ); >;
+	float g_fledgeintensityb < UiGroup( ",0/,0/0" ); Default1( 1.8 ); Range1( 0, 100 ); >;
+	float4 g_vcolor1 < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 1.00, 0.45, 0.00, 1.00 ); >;
 	float g_fledgepositiona < UiGroup( ",0/,0/0" ); Default1( 10.634445 ); Range1( -100, 100 ); >;
-	float g_fledgeintensity < UiGroup( ",0/,0/0" ); Default1( 0.5 ); Range1( 0, 100 ); >;
-	float4 g_vbubblecolor < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 0.13, 0.02, 0.02, 1.00 ); >;
+	float g_fledgeintensity < UiGroup( ",0/,0/0" ); Default1( 1.2 ); Range1( 0, 100 ); >;
+	float4 g_vbubblecolor < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 1.00, 0.60, 0.10, 1.00 ); >;
 	
 	float4 MainPs( PixelInput i ) : SV_Target0
 	{
@@ -106,7 +106,7 @@ PS
 		float l_5 = l_3 + l_4;
 		float l_6 = l_2 + l_5;
 		float2 l_7 = i.vTextureCoords.xy * float2( 1, 1 );
-		float2 l_8 = l_7 * float2( 13.571265, 13.571265 );
+		float2 l_8 = l_7 * float2( 6, 6 );
 		float l_9 = ValueNoise( l_8 );
 		float2 l_10 = i.vTextureCoords.xy * float2( 1, 1 );
 		float2 l_11 = float2( 2.9234703, 2.9234703 ) * l_10;
@@ -138,14 +138,14 @@ PS
 		float4 l_37 = l_21 + l_36;
 		float2 l_38 = i.vTextureCoords.xy * float2( 1, 1 );
 		float2 l_39 = l_38 / float2( 10000, 10000 );
-		float2 l_40 = float2( 47.36683, 47.36683 ) * l_39;
+		float2 l_40 = float2( 12, 12 ) * l_39;
 		float l_41 = l_40.x;
-		float l_42 = 0.055535696 * g_flTime;
+		float l_42 = 0.3 * g_flTime;
 		float l_43 = l_42 * -1;
 		float2 l_44 = TileAndOffsetUv( l_40, float2( 1, 1 ), float2( l_43, l_43 ) );
 		float l_45 = l_44.y;
 		float2 l_46 = float2( l_41, l_45);
-		float l_47 = g_flTime * 0.7413055;
+		float l_47 = g_flTime * 1.6;
 		float l_48 = sin( l_47 );
 		float l_49 = l_48 + 1.4;
 		float l_50 = l_49 * 1;
