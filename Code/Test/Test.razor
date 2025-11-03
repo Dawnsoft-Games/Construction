@@ -6,306 +6,273 @@
 @namespace Sandbox
 
 <root class="test-root">
-	<MaterialPanel class="material-background" @ref="backgroundPanel" />
+	<div class="model3d-container">
+		<Model3DPanel @ref="model3DPanel"
+			Model="@CurrentModel"
+			Tint="@ModelTint"
+			Scale="@ModelScale"
+			EnableRotation="true"
+			EnableZoom="true"
+			AutoRotate="@AutoRotate"
+			AutoRotateSpeed="30.0" />
+	</div>
 
-	<div class="content">
-		<div class="title">@MyStringValue</div>
+	<div class="controls-panel">
+		<h2>3D Objekt Viewer</h2>
+		
+		<div class="button-group">
+			<button @onclick="CreateSphere">🌐 Kugel</button>
+			<button @onclick="CreateCube">📦 Würfel</button>
+			<button @onclick="CreateCylinder">🥫 Zylinder</button>
+		</div>
 
+		<div class="slider-group">
+			<label>Größe: @ModelScale.ToString("F1")x</label>
+			<input type="range" min="0.5" max="3.0" step="0.1" @bind="ModelScale" />
+		</div>
 
+		<div class="checkbox-group">
+			<label>
+				<input type="checkbox" @bind="AutoRotate" />
+				Auto-Rotation
+			</label>
+		</div>
 
-		<div class="field">
-			<button @onclick="CreateEntityWithComponent">Create Entity with Component</button>
+		<div class="color-group">
+			<button class="color-red" @onclick="@(() => ModelTint = Color.Red)">Rot</button>
+			<button class="color-green" @onclick="@(() => ModelTint = Color.Green)">Grün</button>
+			<button class="color-blue" @onclick="@(() => ModelTint = Color.Blue)">Blau</button>
+			<button class="color-white" @onclick="@(() => ModelTint = Color.White)">Weiß</button>
+		</div>
+
+		<div class="info-box">
+			<p><strong>Steuerung:</strong></p>
+			<p>• Mausrad: Zoomen</p>
+			<p>• Linke Maus ziehen: Drehen</p>
 		</div>
 	</div>
 </root>
 
+<style>
+	.test-root {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+		padding: 20px;
+		gap: 20px;
+	}
+
+	.model3d-container {
+		flex: 2;
+		background: rgba(0, 0, 0, 0.3);
+		border-radius: 12px;
+		overflow: hidden;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+	}
+
+	.controls-panel {
+		flex: 1;
+		background: rgba(255, 255, 255, 0.95);
+		border-radius: 12px;
+		padding: 20px;
+		overflow-y: auto;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+		max-width: 300px;
+	}
+
+	.controls-panel h2 {
+		margin: 0 0 20px 0;
+		color: #1e3c72;
+		font-size: 24px;
+		font-weight: bold;
+	}
+
+	.button-group,
+	.slider-group,
+	.checkbox-group,
+	.color-group,
+	.info-box {
+		margin-bottom: 20px;
+		padding-bottom: 20px;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	}
+
+	.info-box {
+		border-bottom: none;
+	}
+
+	.button-group {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	button {
+		padding: 12px 20px;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+	}
+
+	button:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+	}
+
+	.slider-group label {
+		display: block;
+		margin-bottom: 8px;
+		color: #555;
+		font-weight: 600;
+	}
+
+	input[type="range"] {
+		width: 100%;
+		height: 6px;
+		border-radius: 3px;
+		background: rgba(0, 0, 0, 0.1);
+		outline: none;
+		cursor: pointer;
+	}
+
+	.checkbox-group label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: #555;
+		cursor: pointer;
+	}
+
+	input[type="checkbox"] {
+		width: 18px;
+		height: 18px;
+		cursor: pointer;
+	}
+
+	.color-group {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+	}
+
+	.color-red {
+		background: linear-gradient(135deg, #ff6b6b, #c92a2a) !important;
+	}
+
+	.color-green {
+		background: linear-gradient(135deg, #51cf66, #2f9e44) !important;
+	}
+
+	.color-blue {
+		background: linear-gradient(135deg, #339af0, #1864ab) !important;
+	}
+
+	.color-white {
+		background: linear-gradient(135deg, #f1f3f5, #adb5bd) !important;
+		color: #333 !important;
+	}
+
+	.info-box {
+		background: rgba(102, 126, 234, 0.1);
+		padding: 15px;
+		border-radius: 8px;
+		color: #555;
+		font-size: 14px;
+	}
+
+	.info-box p {
+		margin: 0 0 8px 0;
+	}
+
+	.info-box strong {
+		color: #1e3c72;
+	}
+</style>
+
 @code
 {
-	[Property, TextArea] public string MyStringValue { get; set; } = "Hello World!";
+	private Model3DPanel model3DPanel;
 
-	[System.Text.Json.Serialization.JsonIgnore]
-	private Panel cachedRootPanel;
+	[Property] public Model CurrentModel { get; set; }
+	[Property] public Color ModelTint { get; set; } = Color.White;
+	[Property] public float ModelScale { get; set; } = 1.0f;
+	[Property] public bool AutoRotate { get; set; } = false;
 
-	[System.Text.Json.Serialization.JsonIgnore]
-	private MaterialPanel backgroundPanel;
-
-	// Direct Material property with asset picker
-	[Property]
-	public Material Material
+	protected override void OnStart()
 	{
-		get => _material;
-		set
-		{
-			if ( _material != value )
-			{
-				_material = value;
-				Log.Info( $"Test.razor: Material changed to {(_material != null ? _material.ToString() : "null")}" );
-				hasAppliedInitialBackground = false;
-				// Don't call TryApplyMaterialBackground here - let OnUpdate handle it
-				// because backgroundPanel might not be ready yet
-			}
-		}
+		base.OnStart();
+		CreateSphere(); // Start with a sphere
 	}
-
-	[Property]
-	public Color BackgroundTint
-	{
-		get => _backgroundTint;
-		set
-		{
-			if ( _backgroundTint != value )
-			{
-				_backgroundTint = value;
-				hasAppliedInitialBackground = false;
-				// Don't call TryApplyMaterialBackground here - let OnUpdate handle it
-			}
-		}
-	}
-
-	[Property, Range( -1000f, 1000f )]
-	public float MaterialOffsetX
-	{
-		get => _materialOffsetX;
-		set
-		{
-			if ( _materialOffsetX != value )
-			{
-				_materialOffsetX = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( -1000f, 1000f )]
-	public float MaterialOffsetY
-	{
-		get => _materialOffsetY;
-		set
-		{
-			if ( _materialOffsetY != value )
-			{
-				_materialOffsetY = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( -1000f, 1000f )]
-	public float MaterialOffsetZ
-	{
-		get => _materialOffsetZ;
-		set
-		{
-			if ( _materialOffsetZ != value )
-			{
-				_materialOffsetZ = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( 0.1f, 10f )]
-	public float MaterialScale
-	{
-		get => _materialScale;
-		set
-		{
-			if ( _materialScale != value )
-			{
-				_materialScale = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( -360f, 360f )]
-	public float MaterialRotation
-	{
-		get => _materialRotation;
-		set
-		{
-			if ( _materialRotation != value )
-			{
-				_materialRotation = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( -360f, 360f ), Title( "Rotation X (Pitch)" )]
-	public float MaterialRotationX
-	{
-		get => _materialRotationX;
-		set
-		{
-			if ( _materialRotationX != value )
-			{
-				_materialRotationX = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( -360f, 360f ), Title( "Rotation Y (Yaw)" )]
-	public float MaterialRotationY
-	{
-		get => _materialRotationY;
-		set
-		{
-			if ( _materialRotationY != value )
-			{
-				_materialRotationY = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property, Range( -360f, 360f ), Title( "Rotation Z (Roll)" )]
-	public float MaterialRotationZ
-	{
-		get => _materialRotationZ;
-		set
-		{
-			if ( _materialRotationZ != value )
-			{
-				_materialRotationZ = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property]
-	public bool ParallelToScreen
-	{
-		get => _parallelToScreen;
-		set
-		{
-			if ( _parallelToScreen != value )
-			{
-				_parallelToScreen = value;
-				hasAppliedInitialBackground = false;
-			}
-		}
-	}
-
-	[Property] private Material _material;
-	[Property] private Color _backgroundTint = Color.White;
-	[Property] private float _materialOffsetX = 0f;
-	[Property] private float _materialOffsetY = 0f;
-	[Property] private float _materialOffsetZ = 0f;
-	[Property] private float _materialScale = 1f;
-	[Property] private float _materialRotation = 0f;
-	[Property] private float _materialRotationX = 0f;
-	[Property] private float _materialRotationY = 0f;
-	[Property] private float _materialRotationZ = 0f;
-	[Property] private bool _parallelToScreen = false;
-	[Property] bool hasAppliedInitialBackground;
 
 	protected override int BuildHash()
 	{
-		unchecked
-		{
-			int hash = 17;
-			hash = hash * 23 + (MyStringValue?.GetHashCode() ?? 0);
-			hash = hash * 23 + (Material?.GetHashCode() ?? 0);
-			hash = hash * 23 + BackgroundTint.GetHashCode();
-			return hash;
-		}
+		return HashCode.Combine( CurrentModel, ModelTint, ModelScale, AutoRotate );
 	}
 
-	void CreateEntityWithComponent()
+	void CreateSphere()
 	{
-		// Create a simple GameObject and attach the component so it runs in-game.
-		var go = new GameObject();
-		var comp = go.Components.GetOrCreate<MaterialControlComponent>();
-
-		// Use the selected material
-		if ( Material != null )
-		{
-			comp.Material = Material;
-
-			// Also create a UI MaterialPanel under the root and apply the material there
-			try
-			{
-				var root = ResolveRootPanel();
-				if ( root != null )
-				{
-					var uiPanel = root.AddChild<MaterialPanel>();
-					uiPanel.Material = Material;
-				}
-			}
-			catch { }
-		}
-
-		comp.BackgroundColor = BackgroundTint;
-
-		TryApplyMaterialBackground();
+		var builder = Model.Builder;
+		builder.AddSphere( Vector3.Zero, 50.0f, 32, 32 );
+		CurrentModel = builder.Create();
+		Log.Info( "Created sphere model" );
 	}
 
-	protected override void OnUpdate()
+	void CreateCube()
 	{
-		if ( hasAppliedInitialBackground )
-		{
-			return;
-		}
-
-		hasAppliedInitialBackground = TryApplyMaterialBackground();
+		var builder = Model.Builder;
+		builder.AddCube( new Vector3( 0, 0, 0 ), new Vector3( 80, 80, 80 ), Rotation.Identity );
+		CurrentModel = builder.Create();
+		Log.Info( "Created cube model" );
 	}
 
-	bool TryApplyMaterialBackground()
+	void CreateCylinder()
 	{
-		if ( backgroundPanel == null || !backgroundPanel.IsValid() )
+		var builder = Model.Builder;
+		
+		// Create cylinder using circles
+		var radius = 40.0f;
+		var height = 100.0f;
+		var segments = 32;
+		
+		// Top and bottom circles
+		var topCenter = new Vector3( 0, 0, height / 2 );
+		var bottomCenter = new Vector3( 0, 0, -height / 2 );
+		
+		// Create cylinder sides
+		for ( int i = 0; i < segments; i++ )
 		{
-			Log.Warning( "Test.razor: backgroundPanel is null or invalid" );
-			return false;
+			float angle1 = (i / (float)segments) * MathF.PI * 2;
+			float angle2 = ((i + 1) / (float)segments) * MathF.PI * 2;
+			
+			var x1 = MathF.Cos( angle1 ) * radius;
+			var y1 = MathF.Sin( angle1 ) * radius;
+			var x2 = MathF.Cos( angle2 ) * radius;
+			var y2 = MathF.Sin( angle2 ) * radius;
+			
+			var p1Top = topCenter + new Vector3( x1, y1, 0 );
+			var p2Top = topCenter + new Vector3( x2, y2, 0 );
+			var p1Bottom = bottomCenter + new Vector3( x1, y1, 0 );
+			var p2Bottom = bottomCenter + new Vector3( x2, y2, 0 );
+			
+			// Side quads (as triangles)
+			builder.AddTriangle( p1Top, p2Top, p2Bottom );
+			builder.AddTriangle( p1Top, p2Bottom, p1Bottom );
+			
+			// Top cap
+			builder.AddTriangle( topCenter, p2Top, p1Top );
+			
+			// Bottom cap
+			builder.AddTriangle( bottomCenter, p1Bottom, p2Bottom );
 		}
-
-		if ( Material == null )
-		{
-			Log.Warning( "Test.razor: Material is null, clearing background" );
-			backgroundPanel.Material = null;
-			return false;
-		}
-
-		Log.Info( $"Test.razor: Applying material {Material} with tint {BackgroundTint}, offset ({MaterialOffsetX}, {MaterialOffsetY}, {MaterialOffsetZ}), scale {MaterialScale}, rotation (X:{MaterialRotationX}, Y:{MaterialRotationY}, Z:{MaterialRotationZ}), parallelToScreen {ParallelToScreen}" );
-		backgroundPanel.Material = Material;
-		backgroundPanel.Tint = BackgroundTint;
-		backgroundPanel.Offset = new Vector3( MaterialOffsetX, MaterialOffsetY, MaterialOffsetZ );
-		backgroundPanel.Scale = MaterialScale;
-		backgroundPanel.RotationX = MaterialRotationX;
-		backgroundPanel.RotationY = MaterialRotationY;
-		backgroundPanel.RotationZ = MaterialRotationZ;
-		backgroundPanel.ParallelToScreen = ParallelToScreen;
-		backgroundPanel.Style.BackgroundColor = BackgroundTint;
-		Log.Info( $"Test.razor: Successfully applied! backgroundPanel.Material is now {backgroundPanel.Material}" );
-		return true;
-	}
-
-	Panel ResolveRootPanel()
-	{
-		if ( cachedRootPanel != null && cachedRootPanel.IsValid() )
-		{
-			return cachedRootPanel;
-		}
-
-		var panel = Panel;
-		if ( panel is null )
-		{
-			return null;
-		}
-
-		cachedRootPanel = FindRootPanel( panel );
-		return cachedRootPanel;
-	}
-
-	Panel FindRootPanel( Panel start )
-	{
-		var current = start;
-		while ( current?.Parent is Panel parent )
-		{
-			current = parent;
-		}
-
-		return current ?? start;
+		
+		CurrentModel = builder.Create();
+		Log.Info( "Created cylinder model" );
 	}
 }

@@ -1,0 +1,19 @@
+// THIS FILE IS AUTO-GENERATED
+
+Layer0
+{
+	shader "shader/waves.shader"
+
+	g_fledgeintensity "75.354"
+	g_fledgeintensityb "57.507"
+	g_fledgepositiona "28.045"
+	g_fledgepositionb "45.609"
+	g_flheight "-12.748"
+	g_flnoisewidth "10.000"
+	g_vbubblecolor "[0.027451 0.015686 0.701961 1.000000]"
+	g_vcolor1 "[0.588235 0.847059 0.470588 1.000000]"
+	g_vcolor2 "[0.592157 0.196078 0.196078 1.000000]"
+
+	//---- Fog ----
+	g_bFogEnabled "1"
+}

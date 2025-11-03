@@ -895,6 +895,51 @@
           "Children": []
         }
       ]
+    },
+    {
+      "__guid": "702d5b89-098a-4cb9-9106-608e3e7cd0bf",
+      "__version": 1,
+      "Flags": 0,
+      "Name": "Object",
+      "Position": "-138.5885,-131.856,164.189",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "NetworkOrphaned": 0,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Construction.MyComponent1",
+          "__guid": "2f0d1716-cdd5-4e69-b1d7-4d1feb4e7b31",
+          "__enabled": true,
+          "IsActive": true,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PositionOffset": "1,1,1",
+          "Speed": 1
+        },
+        {
+          "__type": "Construction.MyComponent2",
+          "__guid": "6c3e38f5-2b70-4604-a32c-10e95f27b0af",
+          "__enabled": true,
+          "IsActive": false,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "Speed": 2
+        }
+      ],
+      "Children": []
     }
   ],
   "SceneProperties": {
