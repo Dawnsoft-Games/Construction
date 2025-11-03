@@ -300,96 +300,27 @@
 
 	void CreateSphere()
 	{
-		var builder = Model.Builder;
-		builder.AddSphere( Vector3.Zero, 50.0f, 32, 32 );
-		SelectedModel = builder.Create();
-		Log.Info( "Created sphere model" );
+		SelectedModel = Model.Load( "models/dev/sphere.vmdl" );
+		Log.Info( "Selected sphere model" );
 	}
 
 	void CreateCube()
 	{
-		var builder = Model.Builder;
-		builder.AddCube( new Vector3( 0, 0, 0 ), new Vector3( 80, 80, 80 ), Rotation.Identity );
-		SelectedModel = builder.Create();
-		Log.Info( "Created cube model" );
+		SelectedModel = Model.Load( "models/dev/box.vmdl" );
+		Log.Info( "Selected cube model" );
 	}
 
 	void CreateCylinder()
 	{
-		var builder = Model.Builder;
-		
-		// Create cylinder using circles
-		var radius = 40.0f;
-		var height = 100.0f;
-		var segments = 32;
-		
-		// Top and bottom circles
-		var topCenter = new Vector3( 0, 0, height / 2 );
-		var bottomCenter = new Vector3( 0, 0, -height / 2 );
-		
-		// Create cylinder sides
-		for ( int i = 0; i < segments; i++ )
-		{
-			float angle1 = (i / (float)segments) * MathF.PI * 2;
-			float angle2 = ((i + 1) / (float)segments) * MathF.PI * 2;
-			
-			var x1 = MathF.Cos( angle1 ) * radius;
-			var y1 = MathF.Sin( angle1 ) * radius;
-			var x2 = MathF.Cos( angle2 ) * radius;
-			var y2 = MathF.Sin( angle2 ) * radius;
-			
-			var p1Top = topCenter + new Vector3( x1, y1, 0 );
-			var p2Top = topCenter + new Vector3( x2, y2, 0 );
-			var p1Bottom = bottomCenter + new Vector3( x1, y1, 0 );
-			var p2Bottom = bottomCenter + new Vector3( x2, y2, 0 );
-			
-			// Side quads (as triangles)
-			builder.AddTriangle( p1Top, p2Top, p2Bottom );
-			builder.AddTriangle( p1Top, p2Bottom, p1Bottom );
-			
-			// Top cap
-			builder.AddTriangle( topCenter, p2Top, p1Top );
-			
-			// Bottom cap
-			builder.AddTriangle( bottomCenter, p1Bottom, p2Bottom );
-		}
-		
-		SelectedModel = builder.Create();
-		Log.Info( "Created cylinder model" );
+		// No dev cylinder model available in assets; use box as placeholder
+		SelectedModel = Model.Load( "models/dev/box.vmdl" );
+		Log.Info( "Selected cylinder (box placeholder) model" );
 	}
 
 	void CreateCone()
 	{
-		var builder = Model.Builder;
-		
-		var radius = 50.0f;
-		var height = 100.0f;
-		var segments = 32;
-		
-		var apex = new Vector3( 0, 0, height / 2 );
-		var baseCenter = new Vector3( 0, 0, -height / 2 );
-		
-		for ( int i = 0; i < segments; i++ )
-		{
-			float angle1 = (i / (float)segments) * MathF.PI * 2;
-			float angle2 = ((i + 1) / (float)segments) * MathF.PI * 2;
-			
-			var x1 = MathF.Cos( angle1 ) * radius;
-			var y1 = MathF.Sin( angle1 ) * radius;
-			var x2 = MathF.Cos( angle2 ) * radius;
-			var y2 = MathF.Sin( angle2 ) * radius;
-			
-			var p1 = baseCenter + new Vector3( x1, y1, 0 );
-			var p2 = baseCenter + new Vector3( x2, y2, 0 );
-			
-			// Side triangles
-			builder.AddTriangle( apex, p2, p1 );
-			
-			// Base triangle
-			builder.AddTriangle( baseCenter, p1, p2 );
-		}
-		
-		SelectedModel = builder.Create();
-		Log.Info( "Created cone model" );
+		// Use box as placeholder for cone
+		SelectedModel = Model.Load( "models/dev/box.vmdl" );
+		Log.Info( "Selected cone (box placeholder) model" );
 	}
 }

@@ -83,17 +83,14 @@ public class Model3DPanel : ScenePanel
 		Style.PointerEvents = PointerEvents.All;
 		
 		// Set camera properties
-		CameraPosition = new Vector3( 0, 0, Distance );
-		CameraRotation = Rotation.Identity;
-		FieldOfView = 60;
-		
-		// Create a default sphere model if none is provided
+		// Scene handling is done when the panel is first rendered. Use a default model instead of building geometry.
+		// Use a shipped dev model to avoid Model.Builder API differences.
 		if ( Model == null )
 		{
-			Model = Model.Builder
-				.AddSphere( Vector3.Zero, 50.0f, 32, 32 )
-				.Create();
+			Model = Model.Load( "models/dev/sphere.vmdl" );
 		}
+		
+		// Scene will be created on first render in SetupScene()
 	}
 
 	protected override void OnAfterTreeRender( bool firstTime )
@@ -140,10 +137,6 @@ public class Model3DPanel : ScenePanel
 	{
 		base.Tick();
 		
-		// Update camera position based on distance
-		CameraPosition = new Vector3( 0, Distance, Distance * 0.5f );
-		CameraRotation = Rotation.LookAt( -CameraPosition.Normal );
-		
 		// Auto-rotation
 		if ( AutoRotate )
 		{
@@ -170,16 +163,19 @@ public class Model3DPanel : ScenePanel
 			// Recreate scene object if it was lost
 			SetupScene();
 		}
+		
+		// Wheel handling removed: editor-only APIs (WheelEvent/Application.MouseWheelDelta) are not
+		// available in all build targets. Use the UI controls (slider) to change Scale/Distance instead.
 	}
 
 	protected override void OnMouseDown( MousePanelEvent e )
 	{
 		base.OnMouseDown( e );
 		
-		if ( EnableRotation && e.MouseButton == "mouseleft" )
+		if ( EnableRotation && e.MouseButton == MouseButtons.Left )
 		{
 			_isDragging = true;
-			_lastMousePos = e.LocalMousePosition;
+			_lastMousePos = Mouse.Position;
 			e.StopPropagation();
 		}
 	}
@@ -188,7 +184,7 @@ public class Model3DPanel : ScenePanel
 	{
 		base.OnMouseUp( e );
 		
-		if ( e.MouseButton == "mouseleft" )
+		if ( e.MouseButton == MouseButtons.Left )
 		{
 			_isDragging = false;
 		}
@@ -200,8 +196,8 @@ public class Model3DPanel : ScenePanel
 		
 		if ( _isDragging && EnableRotation )
 		{
-			var delta = e.LocalMousePosition - _lastMousePos;
-			_lastMousePos = e.LocalMousePosition;
+			var delta = Mouse.Position - _lastMousePos;
+			_lastMousePos = Mouse.Position;
 			
 			// Update rotation based on mouse movement
 			var angles = ModelRotation;
@@ -217,24 +213,14 @@ public class Model3DPanel : ScenePanel
 		}
 	}
 
-	protected override void OnMouseWheel( MousePanelEvent e )
-	{
-		base.OnMouseWheel( e );
-		
-		if ( EnableZoom )
-		{
-			// Zoom in/out by adjusting distance
-			Distance -= e.Delta.y * 10.0f;
-			Distance = Math.Clamp( Distance, MinDistance, MaxDistance );
-			e.StopPropagation();
-		}
-	}
+	// Note: some UI assemblies (editor) define WheelEvent and OnWheel, but the runtime
+	// game UI may not. Instead, handle mouse wheel input each Tick via Application.MouseWheelDelta
 
-	protected override void OnDeleted()
+	public override void OnDeleted()
 	{
 		base.OnDeleted();
 		
-		// Clean up
+		// Clean up scene objects and lights
 		_sceneObject?.Delete();
 		_sceneLight1?.Delete();
 		_sceneLight2?.Delete();
