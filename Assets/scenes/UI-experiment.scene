@@ -635,36 +635,6 @@
             "component_type": "SkinnedModelRenderer"
           },
           "UpdateEveryNFrames": 2
-        },
-        {
-          "__type": "Sandbox.ScreenPanel",
-          "__guid": "51dd7c3a-0697-4b5d-b6ad-849a5dbcffcf",
-          "__enabled": true,
-          "AutoScreenScale": true,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "Opacity": 1,
-          "Scale": 1,
-          "ScaleStrategy": "ConsistentHeight",
-          "TargetCamera": null,
-          "ZIndex": 100
-        },
-        {
-          "__type": "Construction.UI.SceneChanger",
-          "__guid": "1b652d50-98dd-4e74-92c3-af27eb68e8cd",
-          "__enabled": true,
-          "OnComponentDestroy": null,
-          "OnComponentDisabled": null,
-          "OnComponentEnabled": null,
-          "OnComponentFixedUpdate": null,
-          "OnComponentStart": null,
-          "OnComponentUpdate": null,
-          "SceneA": "scenes/ui-experiment.scene",
-          "SceneB": "scenes/2.scene"
         }
       ],
       "Children": [
@@ -115376,6 +115346,58 @@
           "PlayerPrefab": null,
           "SpawnPoints": [],
           "StartServer": true
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "3d0d2b2a-dd46-45cd-9f62-f76fbb05a180",
+      "__version": 1,
+      "Flags": 0,
+      "Name": "Terrain",
+      "Position": "-1782.437,-1108.769,147.5206",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkInterpolation": true,
+      "NetworkOrphaned": 0,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.Terrain",
+          "__guid": "3025bebc-5926-4d43-9eb4-4811e440bcc8",
+          "__enabled": true,
+          "__version": 1,
+          "ClipMapLodExtentTexels": 256,
+          "ClipMapLodLevels": 6,
+          "ColliderFlags": 0,
+          "Elasticity": null,
+          "EnableCollision": true,
+          "Friction": null,
+          "IsTrigger": false,
+          "MaterialOverride": null,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "OnObjectTriggerEnter": null,
+          "OnObjectTriggerExit": null,
+          "OnTriggerEnter": null,
+          "OnTriggerExit": null,
+          "RenderType": "Off",
+          "RollingResistance": null,
+          "Static": true,
+          "Storage": "untitled.terrain",
+          "SubdivisionFactor": 1,
+          "SubdivisionLodCount": 3,
+          "Surface": null,
+          "SurfaceVelocity": "0,0,0",
+          "TerrainHeight": 10000,
+          "TerrainSize": 19968
         }
       ],
       "Children": []
