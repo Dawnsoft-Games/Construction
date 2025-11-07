@@ -4,17 +4,14 @@ Layer0
 {
 	shader "shader/fire.shader"
 
-	g_flbaseoffset "-10.000"
-	g_flheight "0.595"
-	g_flnoisescale "28.329"
-	g_flone "1.000"
-	g_flspeed "1.388"
-	g_flturbulence "0.170"
-	g_flverticalstretch "0.765"
-	g_vbubblecolor "[1.000000 0.901961 0.501961 1.000000]"
+	g_flbaseoffset "-1.124"
+	g_flheight "6.830"
+	g_flnoisescale "55.331"
+	g_flone "0.562"
+	g_flspeed "4.265"
+	g_flturbulence "8.040"
+	g_flvertexdisplacement "8.674"
+	g_flverticalstretch "0.000"
 	g_vcolordark "[0.600000 0.019608 0.000000 1.000000]"
 	g_vcolormid "[1.000000 0.450980 0.000000 1.000000]"
-
-	//---- Fog ----
-	g_bFogEnabled "1"
 }

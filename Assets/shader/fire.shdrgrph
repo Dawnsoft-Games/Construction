@@ -7,12 +7,12 @@
   "Category": null,
   "Icon": null,
   "AddToNodeLibrary": false,
-  "BlendMode": "Opaque",
-  "ShadingModel": "Lit",
+  "BlendMode": "Translucent",
+  "ShadingModel": "Unlit",
   "Domain": "Surface",
   "PreviewSettings": {
-    "RenderBackfaces": false,
-    "EnableShadows": true,
+    "RenderBackfaces": true,
+    "EnableShadows": false,
     "ShowGround": false,
     "ShowSkybox": true,
     "BackgroundColor": "0,0,0,1",
@@ -33,9 +33,9 @@
         "Identifier": "31",
         "Output": "Result"
       },
-      "Emission": {
-        "Identifier": "33",
-        "Output": "Result"
+      "PositionOffset": {
+        "Identifier": "36",
+        "Output": "XYZ"
       }
     },
     {
@@ -89,7 +89,7 @@
     {
       "_class": "Time",
       "Identifier": "4",
-      "Position": "-1200,-204",
+      "Position": "-1200,-216",
       "HandleOffsets": {}
     },
     {
@@ -620,6 +620,60 @@
       },
       "B": {
         "Identifier": "19",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "Float",
+      "Min": 0,
+      "Max": 10,
+      "Value": 0.6,
+      "Name": "vertex displacement",
+      "IsAttribute": false,
+      "UI": {
+        "Type": "Default",
+        "Step": 0,
+        "Priority": 0,
+        "PrimaryGroup": {
+          "Name": null,
+          "Priority": 0
+        },
+        "SecondaryGroup": {
+          "Name": null,
+          "Priority": 0
+        }
+      },
+      "Identifier": "34",
+      "Position": "180,-240",
+      "HandleOffsets": {}
+    },
+    {
+      "_class": "Multiply",
+      "DefaultA": 0,
+      "DefaultB": 1,
+      "Identifier": "35",
+      "Position": "180,-168",
+      "HandleOffsets": {},
+      "A": {
+        "Identifier": "8",
+        "Output": "Result"
+      },
+      "B": {
+        "Identifier": "34",
+        "Output": "Result"
+      }
+    },
+    {
+      "_class": "CombineVector",
+      "DefaultX": 0,
+      "DefaultY": 0,
+      "DefaultZ": 0,
+      "DefaultW": 0,
+      "Identifier": "36",
+      "Position": "360,-192",
+      "HandleOffsets": {},
+      "Y": {
+        "Identifier": "35",
         "Output": "Result"
       }
     }

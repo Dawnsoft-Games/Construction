@@ -1,0 +1,85 @@
+@using System;
+@using Sandbox;
+@using Sandbox.UI;
+@inherits PanelComponent
+@namespace Construction.UI
+
+<root class="scene-changer">
+    <div class="scene-changer-box">
+        <h3>Scene Changer</h3>
+
+        <label>Szene A</label>
+        <input type="text" @bind="SceneA" />
+        <div class="button-row">
+            <button @onclick="@(() => LoadScene( SceneA ))">Load A</button>
+        </div>
+
+        <label>Szene B</label>
+        <input type="text" @bind="SceneB" />
+        <div class="options-row">
+            <label><input type="checkbox" @bind="IsAdditive" /> Additive laden</label>
+            <label><input type="checkbox" @bind="ShowLoadingScreen" /> Ladebildschirm anzeigen</label>
+        </div>
+        <div class="button-row">
+            <button @onclick="@(() => LoadScene( SceneB ))">Load B</button>
+        </div>
+
+        <p class="note">Hinweis: Verwende Pfade wie <code>scenes/1.scene</code> oder <code>scenes/ui-experiment.scene</code>. Die Szene wird ersetzt (kein Disconnect erwartet).</p>
+    </div>
+</root>
+
+<style>
+    .scene-changer { padding: 8px;pointer-events: all; }
+    .scene-changer-box { background: rgba(255,255,255,0.9); padding: 12px; border-radius: 8px; width: 320px; }
+    .button-row { margin-top: 6px; margin-bottom: 12px; }
+    input[type="text"] { width: 100%; padding: 6px; margin-top: 4px; margin-bottom: 6px; box-sizing: border-box; }
+    button { padding: 8px 12px; background: #556; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    .note { font-size: 12px; color: #444; }
+    
+</style>
+
+@code
+{
+    [Property]
+    public string SceneA { get; set; } = "scenes/ui-experiment.scene";
+
+    [Property]
+    public string SceneB { get; set; } = "scenes/2.scene";
+
+    [Property]
+    public bool IsAdditive { get; set; } = false;
+
+    [Property]
+    public bool ShowLoadingScreen { get; set; } = true;
+
+    void LoadScene( string path )
+    {
+        if ( string.IsNullOrWhiteSpace( path ) )
+        {
+            Log.Warning( "SceneChanger: Kein Scene-Pfad angegeben." );
+            return;
+        }
+
+        try
+        {
+            if ( IsAdditive )
+            {
+                // Reflection and dynamic invocation are blocked by the sandbox whitelist in this build
+                // (see SB1000). We cannot create or invoke engine-only types via reflection here.
+                // Therefore: warn the user and fall back to a replace load. If your engine exposes
+                // a compile-time API for additive loading (e.g. Scene.Load( SceneLoadOptions )),
+                // add a reference and call it directly instead of using reflection.
+                Log.Warning( "SceneChanger: Additive loading requested but not supported in this build (reflection is blocked). Falling back to replace load." );
+            }
+
+            // Replace current scene with the scene from file. This may cause a reconnect on some
+            // server setups; additive loading requires engine API support at compile-time.
+            Scene.LoadFromFile( path );
+            Log.Info( $"SceneChanger: Loaded scene '{path}'." );
+        }
+        catch ( Exception ex )
+        {
+            Log.Warning( $"SceneChanger: Fehler beim Laden der Szene '{path}': {ex.Message}" );
+        }
+    }
+}

@@ -22,7 +22,7 @@ COMMON
 	#define S_ALPHA_TEST 0
 	#endif
 	#ifndef S_TRANSLUCENT
-	#define S_TRANSLUCENT 0
+	#define S_TRANSLUCENT 1
 	#endif
 	
 	#include "common/shared.hlsl"
@@ -53,7 +53,11 @@ struct PixelInput
 VS
 {
 	#include "common/vertex.hlsl"
-
+	
+	float g_flnoisescale < UiGroup( ",0/,0/0" ); Default1( 4 ); Range1( 0, 100 ); >;
+	float g_flspeed < UiGroup( ",0/,0/0" ); Default1( 0.35 ); Range1( 0, 10 ); >;
+	float g_flvertexdisplacement < UiGroup( ",0/,0/0" ); Default1( 0.6 ); Range1( 0, 10 ); >;
+	
 	PixelInput MainVs( VertexInput v )
 	{
 		
@@ -65,6 +69,19 @@ VS
 		i.vTintColor = extraShaderData.vTint;
 		
 		VS_DecodeObjectSpaceNormalAndTangent( v, i.vNormalOs, i.vTangentUOs_flTangentVSign );
+		
+		float2 l_0 = i.vTextureCoords.xy * float2( 1, 1 );
+		float l_1 = g_flnoisescale;
+		float2 l_2 = l_0 * float2( l_1, l_1 );
+		float l_3 = g_flspeed;
+		float l_4 = g_flTime * l_3;
+		float2 l_5 = TileAndOffsetUv( l_2, float2( 1, 1 ), float2( l_4, l_4 ) );
+		float l_6 = Simplex2D( l_5 );
+		float l_7 = g_flvertexdisplacement;
+		float l_8 = l_6 * l_7;
+		float3 l_9 = float3( 0, l_8, 0 );
+		i.vPositionWs.xyz += l_9;
+		i.vPositionPs.xyzw = Position3WsToPs( i.vPositionWs.xyz );
 		return FinalizeVertex( i );
 		
 	}
@@ -83,21 +100,10 @@ PS
 	float g_flheight < UiGroup( ",0/,0/0" ); Default1( 1 ); Range1( 0, 10 ); >;
 	float g_flbaseoffset < UiGroup( ",0/,0/0" ); Default1( 0 ); Range1( -10, 10 ); >;
 	float4 g_vcolormid < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 1.00, 0.45, 0.00, 1.00 ); >;
-	float4 g_vbubblecolor < UiType( Color ); UiGroup( ",0/,0/0" ); Default4( 1.00, 0.90, 0.50, 1.00 ); >;
 	
 	float4 MainPs( PixelInput i ) : SV_Target0
 	{
-		
-		Material m = Material::Init( i );
-		m.Albedo = float3( 1, 1, 1 );
-		m.Normal = float3( 0, 0, 1 );
-		m.Roughness = 1;
-		m.Metalness = 0;
-		m.AmbientOcclusion = 1;
-		m.TintMask = 1;
-		m.Opacity = 1;
-		m.Emission = float3( 0, 0, 0 );
-		m.Transmission = 0;
+
 		
 		float4 l_0 = g_vcolordark;
 		float l_1 = g_flone;
@@ -124,30 +130,8 @@ PS
 		float4 l_22 = g_vcolormid;
 		float4 l_23 = l_22 * float4( l_19, l_19, l_19, l_19 );
 		float4 l_24 = l_21 + l_23;
-		float4 l_25 = g_vbubblecolor;
-		float4 l_26 = l_25 * float4( l_19, l_19, l_19, l_19 );
 		
-		m.Albedo = l_24.xyz;
-		m.Emission = l_26.xyz;
-		m.Opacity = 1;
-		m.Roughness = 1;
-		m.Metalness = 0;
-		m.AmbientOcclusion = 1;
-		
-		
-		m.AmbientOcclusion = saturate( m.AmbientOcclusion );
-		m.Roughness = saturate( m.Roughness );
-		m.Metalness = saturate( m.Metalness );
-		m.Opacity = saturate( m.Opacity );
-		
-		// Result node takes normal as tangent space, convert it to world space now
-		m.Normal = TransformNormal( m.Normal, i.vNormalWs, i.vTangentUWs, i.vTangentVWs );
-		
-		// for some toolvis shit
-		m.WorldTangentU = i.vTangentUWs;
-		m.WorldTangentV = i.vTangentVWs;
-		m.TextureCoords = i.vTextureCoords.xy;
-				
-		return ShadingModelStandard::Shade( m );
+
+		return float4( l_24.xyz, 1 );
 	}
 }
